@@ -296,8 +296,12 @@ class MoneyField(models.DecimalField):
     def deconstruct(self):
         name, path, args, kwargs = super().deconstruct()
 
-        if self._has_default:
+        if self.default is None:
+            del kwargs["default"]
+        else:
             kwargs["default"] = self.default.amount
+        if self.default_currency is None:  # None needs to be preserved
+            kwargs["default_currency"] = self.default_currency
         if self.default_currency is not None and self.default_currency != DEFAULT_CURRENCY:
             kwargs["default_currency"] = str(self.default_currency)
         if self.currency_choices != CURRENCY_CHOICES:
